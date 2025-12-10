@@ -270,7 +270,7 @@
 }
 
 /* Firefox */
-.seat-input-group input[type=number] {
+.seat-input-group input[type='number'] {
   -moz-appearance: textfield;
 }
 
@@ -338,12 +338,6 @@
 .btn-book:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-  width: 100%;
-  padding: var(--spacing-md);
-  font-size: 1rem;
-  font-weight: 600;
-  margin-top: var(--spacing-md);
 }
 
 .warning-message {

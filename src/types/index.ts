@@ -24,13 +24,7 @@ export interface AuthResponse {
 }
 
 // Performance Types
-export enum PerformanceCategory {
-  THEATER = 'THEATER',
-  MUSICAL = 'MUSICAL',
-  CONCERT = 'CONCERT',
-  EXHIBITION = 'EXHIBITION',
-  MOVIE = 'MOVIE',
-}
+export type PerformanceCategory = 'THEATER' | 'MUSICAL' | 'CONCERT' | 'EXHIBITION' | 'MOVIE';
 
 export interface Performance {
   id: number;
@@ -48,12 +42,7 @@ export interface Performance {
 }
 
 // Reservation Types
-export enum ReservationStatus {
-  PENDING = 'PENDING',
-  CONFIRMED = 'CONFIRMED',
-  CANCELLED = 'CANCELLED',
-  EXPIRED = 'EXPIRED',
-}
+export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'EXPIRED';
 
 export interface Reservation {
   reservationId: number;
@@ -67,12 +56,7 @@ export interface Reservation {
 }
 
 // Booking Types
-export enum BookingStatus {
-  PENDING = 'pending',
-  PAID = 'paid',
-  CANCELLED = 'CANCELLED',
-  PAYMENT_FAILED = 'payment_failed',
-}
+export type BookingStatus = 'pending' | 'paid' | 'CANCELLED' | 'payment_failed';
 
 export interface CreateBookingRequest {
   performanceId: string;

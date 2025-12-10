@@ -36,9 +36,9 @@ export default function PerformanceDetailPage() {
     if (id) {
       loadPerformance(parseInt(id));
     }
-    // userId 초기화
     const token = localStorage.getItem('token');
     setCurrentUserId(extractUserIdFromToken(token));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const loadPerformance = async (performanceId: number) => {
@@ -48,8 +48,8 @@ export default function PerformanceDetailPage() {
       setPerformance(data);
       // 리뷰도 로드
       loadReviews(performanceId);
-    } catch (err: any) {
-      setError(err.message || '공연 정보를 불러오는데 실패했습니다.');
+    } catch (err) {
+      setError((err as Error).message || '공연 정보를 불러오는데 실패했습니다.');
     } finally {
       setLoading(false);
     }
@@ -59,12 +59,9 @@ export default function PerformanceDetailPage() {
     try {
       setReviewsLoading(true);
       const data = await apiService.getPerformanceReviews(performanceId);
-      // Handle different response formats
-      const reviewArray = Array.isArray(data) ? data : data?.data || [];
-      setReviews(reviewArray);
-    } catch (err: any) {
+      setReviews(data);
+    } catch (err) {
       console.error('Failed to load reviews:', err);
-      // 리뷰 로드 실패해도 공연 정보는 표시
       setReviewsError('리뷰를 불러올 수 없습니다.');
     } finally {
       setReviewsLoading(false);
@@ -88,7 +85,7 @@ export default function PerformanceDetailPage() {
       });
       setReviews([review, ...reviews]);
       setNewReview({ rating: 5, content: '' });
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to create review:', err);
     }
   };
@@ -103,7 +100,7 @@ export default function PerformanceDetailPage() {
       setReviews(reviews.map((r) => (r.id === reviewId ? updated : r)));
       setEditingReviewId(null);
       setEditingContent('');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to update review:', err);
     }
   };
@@ -113,7 +110,7 @@ export default function PerformanceDetailPage() {
     try {
       await apiService.deleteReview(reviewId);
       setReviews(reviews.filter((r) => r.id !== reviewId));
-    } catch (err: any) {
+    } catch (err) {
       console.error('Failed to delete review:', err);
     }
   };

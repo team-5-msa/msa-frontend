@@ -22,26 +22,32 @@ export function MyReviewsPage() {
       setLoading(true);
       setError(null);
       const data = await apiService.getMyReviews();
-      // Data should now be properly handled in the API service
+
       if (Array.isArray(data)) {
         setReviews(data);
       } else {
         setReviews([]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('MyReviewsPage - loadMyReviews error:', err);
+      const axiosErr = err as Record<string, unknown> & {
+        response?: { status: number; data?: { message?: string } };
+        message?: string;
+      };
 
-      // Check if it's an authentication error
-      if (err.response?.status === 401) {
+      if (axiosErr.response?.status === 401) {
         console.log('401 Unauthorized - but showing empty reviews instead of logout');
-        setReviews([]); // Show empty state instead of logout
+        setReviews([]);
         return;
-      } else if (err.response?.status === 403) {
+      } else if (axiosErr.response?.status === 403) {
         setError('접근 권한이 없습니다.');
-      } else if (err.response?.status === 404) {
-        setReviews([]); // No reviews found
+      } else if (axiosErr.response?.status === 404) {
+        setReviews([]);
       } else {
-        const errorMsg = err.response?.data?.message || err.message || '리뷰를 불러올 수 없습니다.';
+        const errorMsg =
+          (axiosErr.response?.data?.message as string) ||
+          axiosErr.message ||
+          '리뷰를 불러올 수 없습니다.';
         setError(errorMsg);
       }
     } finally {
@@ -61,10 +67,8 @@ export function MyReviewsPage() {
         rating: editRating,
         content: editContent,
       });
-      if (response.success && response.data) {
-        setReviews(reviews.map((r) => (r.id === reviewId ? response.data! : r)));
-        setEditingId(null);
-      }
+      setReviews(reviews.map((r) => (r.id === reviewId ? response : r)));
+      setEditingId(null);
     } catch (err) {
       setError('리뷰 수정에 실패했습니다.');
       console.error(err);

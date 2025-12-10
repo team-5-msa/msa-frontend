@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { apiService } from '../services/api';
 import type { Review } from '../types';
 import './ReviewPage.css';
 
 export function ReviewPage() {
   const { performanceId } = useParams<{ performanceId: string }>();
-  const navigate = useNavigate();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -17,6 +16,7 @@ export function ReviewPage() {
 
   useEffect(() => {
     loadReviews();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [performanceId]);
 
   const loadReviews = async () => {
@@ -24,20 +24,25 @@ export function ReviewPage() {
       setLoading(true);
       if (performanceId) {
         const data = await apiService.getPerformanceReviews(Number(performanceId));
-        // Handle both array and wrapped response formats
-        const reviewArray = Array.isArray(data) ? data : data?.data || [];
-        setReviews(reviewArray);
+        setReviews(data);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('ReviewPage - loadReviews error:', err);
+      const axiosErr = err as Record<string, unknown> & {
+        response?: { status: number; data?: { message?: string } };
+        message?: string;
+      };
 
-      if (err.response?.status === 401) {
+      if (axiosErr.response?.status === 401) {
         console.log('401 Unauthorized - Logging out');
         apiService.logout();
         return;
       }
 
-      const errorMsg = err.response?.data?.message || err.message || '리뷰를 불러올 수 없습니다.';
+      const errorMsg =
+        (axiosErr.response?.data?.message as string) ||
+        axiosErr.message ||
+        '리뷰를 불러올 수 없습니다.';
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -54,19 +59,15 @@ export function ReviewPage() {
           rating,
           content,
         });
-        if (response.success && response.data) {
-          setReviews(reviews.map((r) => (r.id === editingId ? response.data! : r)));
-          setEditingId(null);
-        }
+        setReviews(reviews.map((r) => (r.id === editingId ? response : r)));
+        setEditingId(null);
       } else {
         const response = await apiService.createReview({
           performanceId: Number(performanceId),
           rating,
           content,
         });
-        if (response.success && response.data) {
-          setReviews([...reviews, response.data]);
-        }
+        setReviews([...reviews, response]);
       }
       setRating(5);
       setContent('');

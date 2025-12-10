@@ -74,9 +74,6 @@ class ApiService {
     this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
     const userId = extractUserIdFromToken(token);
-
-    console.log('setAuthHeader', userId);
-
     if (userId) {
       this.api.defaults.headers.common['x-user-id'] = userId;
     }
@@ -89,15 +86,20 @@ class ApiService {
 
   private handleArrayResponse(data: unknown): unknown[] {
     if (Array.isArray(data)) return data;
-    if (data && typeof data === 'object' && 'data' in data && Array.isArray((data as any).data)) {
-      return (data as any).data;
+    if (
+      data &&
+      typeof data === 'object' &&
+      'data' in data &&
+      Array.isArray((data as Record<string, unknown>).data)
+    ) {
+      return (data as Record<string, unknown>).data as unknown[];
     }
     return [];
   }
 
   private handleObjectResponse<T>(data: unknown): T {
     if (data && typeof data === 'object' && 'data' in data) {
-      return (data as any).data;
+      return (data as Record<string, unknown>).data as T;
     }
     return data as T;
   }
@@ -110,10 +112,10 @@ class ApiService {
 
   async login(data: LoginRequest): Promise<ApiResponse<AuthResponse>> {
     const response = await this.api.post('/auth/login', data);
-    if (response.data.success && response.data.data.token) {
+    if (response.data.success && response.data.data?.token) {
       this.token = response.data.data.token;
-      localStorage.setItem('token', this.token);
-      this.setAuthHeader(this.token);
+      localStorage.setItem('token', this.token!);
+      this.setAuthHeader(this.token!);
     }
     return response.data;
   }
@@ -197,8 +199,9 @@ class ApiService {
     try {
       const response = await this.api.get(`/review/reviews/my`);
       return this.handleArrayResponse(response.data) as Review[];
-    } catch (error: any) {
-      if (error.response?.status === 401) {
+    } catch (error) {
+      const axiosError = error as Record<string, unknown> & { response?: { status: number } };
+      if (axiosError.response?.status === 401) {
         return [];
       }
       throw error;
