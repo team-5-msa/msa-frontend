@@ -1,0 +1,268 @@
+.booking-page {
+    padding: var(--spacing-2xl) var(--spacing-lg);
+    max-width: 800px;
+    margin: 0 auto;
+    animation: fadeIn 0.5s ease;
+}
+
+.booking-container {
+    background: var(--color-bg-card);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2xl);
+    border: 1px solid rgba(165, 85, 255, 0.2);
+    box-shadow: var(--shadow-lg);
+}
+
+.progress-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-2xl);
+    padding: var(--spacing-xl);
+    background: rgba(165, 85, 255, 0.05);
+    border-radius: var(--radius-lg);
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex: 1;
+}
+
+.step-number {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    background: var(--color-bg-dark);
+    border: 2px solid var(--color-text-muted);
+    color: var(--color-text-muted);
+    transition: all var(--transition-normal);
+}
+
+.step.active .step-number {
+    background: var(--gradient-primary);
+    border-color: var(--color-primary);
+    color: white;
+    box-shadow: var(--shadow-glow);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.step.completed .step-number {
+    background: var(--color-success);
+    border-color: var(--color-success);
+    color: white;
+}
+
+.step-label {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+.step.active .step-label {
+    color: var(--color-primary);
+}
+
+.step.completed .step-label {
+    color: var(--color-success);
+}
+
+.step-divider {
+    flex: 0.5;
+    height: 2px;
+    background: var(--color-text-muted);
+    margin: 0 var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+}
+
+.booking-summary {
+    margin-bottom: var(--spacing-2xl);
+    padding: var(--spacing-xl);
+    background: linear-gradient(135deg, rgba(165, 85, 255, 0.1) 0%, rgba(0, 191, 255, 0.1) 100%);
+    border-radius: var(--radius-lg);
+    border: 2px solid rgba(165, 85, 255, 0.3);
+}
+
+.booking-summary h2 {
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-primary);
+}
+
+.summary-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--spacing-sm) 0;
+    color: var(--color-text-secondary);
+}
+
+.summary-row.total {
+    padding-top: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+    border-top: 2px solid rgba(165, 85, 255, 0.3);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.summary-label {
+    font-weight: 500;
+}
+
+.summary-value {
+    font-weight: 600;
+}
+
+.total-price {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.5rem;
+}
+
+.step-content {
+    padding: var(--spacing-xl);
+    background: var(--color-bg-dark);
+    border-radius: var(--radius-lg);
+}
+
+.step-content h2 {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.step-description {
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-xl);
+}
+
+.reservation-info {
+    margin-bottom: var(--spacing-xl);
+}
+
+.info-badge {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+}
+
+.info-badge.success {
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid var(--color-success);
+    color: var(--color-success);
+}
+
+.reservation-notice {
+    color: var(--color-warning);
+    font-size: 0.9rem;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(251, 146, 60, 0.1);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--color-warning);
+}
+
+.payment-form {
+    margin-bottom: var(--spacing-xl);
+}
+
+.form-hint {
+    display: block;
+    margin-top: var(--spacing-xs);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.step-content.complete {
+    text-align: center;
+    padding: var(--spacing-2xl);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-xl);
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: white;
+    animation: scaleIn 0.5s ease;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.complete-message {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-2xl);
+    font-size: 1.1rem;
+}
+
+.complete-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.complete-actions .btn {
+    min-width: 180px;
+}
+
+@media (max-width: 640px) {
+    .booking-container {
+        padding: var(--spacing-lg);
+    }
+
+    .progress-steps {
+        padding: var(--spacing-md);
+    }
+
+    .step-number {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .step-label {
+        font-size: 0.8rem;
+    }
+
+    .step-divider {
+        flex: 0.3;
+    }
+
+    .complete-actions {
+        flex-direction: column;
+    }
+
+    .complete-actions .btn {
+        width: 100%;
+    }
+}

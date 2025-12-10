@@ -1,0 +1,44 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor':'#e8f0fe', 'primaryBorderColor':'#1e88e5', 'primaryTextColor':'#0d47a1', 'lineColor':'#1e88e5', 'secondBkgColor':'#fff3e0', 'tertiaryColor':'#f3e5f5', 'tertiaryBorderColor':'#6a1b9a', 'tertiaryTextColor':'#1a237e', 'fontSize':'16px', 'fontFamily': 'arial'}, 'sequence': {'diagramMarginX': 50, 'diagramMarginY': 50, 'mirrorActors': true, 'actorFontSize': 16}}}%%
+sequenceDiagram
+    actor Client as 🎭 클라이언트
+    participant Gateway as 🌐 API Gateway
+    participant Booking as 🎫 Booking Service
+    participant Performance as 🎪 Performance Service
+    participant Payment as 💳 Payment Service
+
+    rect rgb(232, 245, 233)
+    Client->>Gateway: POST /bookings
+    Gateway->>Booking: 예매 요청 전달
+    Note over Client,Booking: 📤 예매 요청 시작
+    end
+    
+    rect rgb(225, 245, 254)
+    Booking->>Performance: 1️⃣ GET /performances/:id
+    Note over Booking,Performance: 공연 정보 조회
+    Performance-->>Booking: ✅ { id: 1, title: '공연 타이틀', description: '공연 설명', category: 'CONCERT'<br/>venue: '공연 장소', imageUrl: 'https://image.url', price: 154000, totalSeats: 450, availableSeats: 450 }
+    end
+    
+    rect rgb(255, 235, 238)
+    Booking->>Performance: 2️⃣ POST /reservations/:performanceId
+    Note over Booking,Performance: 좌석 임시 예약 신청
+    Performance->>Performance: ⚙️ 좌석 차감 (450 → 447)
+    Performance-->>Booking: ✅ { "performanceId": 1, "reservationId": 1, "title": "공연 타이틀", "price": 154000, "availableSeats": 447, "status": "PENDING" }
+    end
+    
+    rect rgb(255, 243, 224)
+    Booking->>Payment: 3️⃣ POST /payments/execute
+    Note over Booking,Payment: 💰 결제 처리
+    Payment-->>Booking: ✅ 결제 성공 | transactionId: "TXN-99999"
+    end
+    
+    rect rgb(232, 245, 233)
+    Booking->>Performance: 4️⃣ PATCH /reservations/:performanceId/:reservationId/confirm
+    Note over Booking,Performance: 예약 최종 확정
+    Performance->>Performance: ✔️ 좌석 확정 (447 유지)
+    Performance-->>Booking: ✅ 예약 상태: CONFIRMED
+    end
+
+    rect rgb(225, 245, 254)
+    Booking-->>Client: 🎉 예매 완료 응답
+    Note over Gateway,Client: ✨ 예매 성공!
+    end
