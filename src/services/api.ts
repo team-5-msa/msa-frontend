@@ -1,11 +1,11 @@
-import axios, { type AxiosInstance } from 'axios';
+import axios, { type AxiosInstance } from "axios";
 import type {
   ApiResponse,
   SignupRequest,
   LoginRequest,
   AuthResponse,
   Performance,
-  Reservation,
+  // Reservation,
   CreateBookingRequest,
   Booking,
   PaymentRequest,
@@ -13,26 +13,33 @@ import type {
   Review,
   CreateReviewRequest,
   UpdateReviewRequest,
-} from '../types';
+} from "../types";
 
-const GATEWAY_URL = 'https://apigateway-iota.vercel.app';
+const GATEWAY_URL = "https://apigateway-iota.vercel.app";
 
 function extractUserIdFromToken(token: string): string | null {
   try {
-    const parts = token.split('.');
+    const parts = token.split(".");
     if (parts.length !== 3) return null;
 
-    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, "+").replace(/_/g, "/"))
+    );
 
-    console.log('[Token Payload]', payload);
+    console.log("[Token Payload]", payload);
 
-    const userId = payload.sub || payload.userId || payload.user_id || payload.id || payload.aud;
+    const userId =
+      payload.sub ||
+      payload.userId ||
+      payload.user_id ||
+      payload.id ||
+      payload.aud;
 
-    console.log('[Extracted userId]', userId);
+    console.log("[Extracted userId]", userId);
 
     return userId ? String(userId) : null;
   } catch (error) {
-    console.error('Token parsing error:', error);
+    console.error("Token parsing error:", error);
     return null;
   }
 }
@@ -45,22 +52,25 @@ class ApiService {
     this.api = axios.create({
       baseURL: GATEWAY_URL,
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
-    this.token = localStorage.getItem('token');
+    this.token = localStorage.getItem("token");
     if (this.token) {
       this.setAuthHeader(this.token);
     }
 
     this.api.interceptors.request.use((config) => {
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, {
-        headers: {
-          Authorization: config.headers['Authorization'],
-          'x-user-id': config.headers['x-user-id'],
-        },
-      });
+      console.log(
+        `[API Request] ${config.method?.toUpperCase()} ${config.url}`,
+        {
+          headers: {
+            Authorization: config.headers["Authorization"],
+            "x-user-id": config.headers["x-user-id"],
+          },
+        }
+      );
       return config;
     });
 
@@ -71,25 +81,25 @@ class ApiService {
   }
 
   private setAuthHeader(token: string) {
-    this.api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    this.api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
     const userId = extractUserIdFromToken(token);
     if (userId) {
-      this.api.defaults.headers.common['x-user-id'] = userId;
+      this.api.defaults.headers.common["x-user-id"] = userId;
     }
   }
 
   private removeAuthHeader() {
-    delete this.api.defaults.headers.common['Authorization'];
-    delete this.api.defaults.headers.common['x-user-id'];
+    delete this.api.defaults.headers.common["Authorization"];
+    delete this.api.defaults.headers.common["x-user-id"];
   }
 
   private handleArrayResponse(data: unknown): unknown[] {
     if (Array.isArray(data)) return data;
     if (
       data &&
-      typeof data === 'object' &&
-      'data' in data &&
+      typeof data === "object" &&
+      "data" in data &&
       Array.isArray((data as Record<string, unknown>).data)
     ) {
       return (data as Record<string, unknown>).data as unknown[];
@@ -98,7 +108,7 @@ class ApiService {
   }
 
   private handleObjectResponse<T>(data: unknown): T {
-    if (data && typeof data === 'object' && 'data' in data) {
+    if (data && typeof data === "object" && "data" in data) {
       return (data as Record<string, unknown>).data as T;
     }
     return data as T;
@@ -106,15 +116,15 @@ class ApiService {
 
   // Auth APIs
   async signup(data: SignupRequest): Promise<ApiResponse<{ user_id: string }>> {
-    const response = await this.api.post('/auth/signup', data);
+    const response = await this.api.post("/auth/signup", data);
     return response.data;
   }
 
   async login(data: LoginRequest): Promise<ApiResponse<AuthResponse>> {
-    const response = await this.api.post('/auth/login', data);
+    const response = await this.api.post("/auth/login", data);
     if (response.data.success && response.data.data?.token) {
       this.token = response.data.data.token;
-      localStorage.setItem('token', this.token!);
+      localStorage.setItem("token", this.token!);
       this.setAuthHeader(this.token!);
     }
     return response.data;
@@ -122,9 +132,9 @@ class ApiService {
 
   logout() {
     this.token = null;
-    localStorage.removeItem('token');
+    localStorage.removeItem("token");
     this.removeAuthHeader();
-    window.location.href = '/';
+    window.location.href = "/";
   }
 
   isAuthenticated(): boolean {
@@ -133,7 +143,7 @@ class ApiService {
 
   // Performance APIs
   async getPerformances(): Promise<Performance[]> {
-    const response = await this.api.get('/performances/performances');
+    const response = await this.api.get("/performances/performances");
     return response.data;
   }
 
@@ -142,48 +152,53 @@ class ApiService {
     return response.data;
   }
 
+  /**
+   *  이 네가지 메서드는 booking 내부에서 구현되어 있습니다.
+   */
   // Reservation APIs
-  async createReservation(performanceId: number, seatCount: number): Promise<Reservation> {
-    const response = await this.api.post(`/performances/reservations/${performanceId}`, {
-      seatCount,
-    });
-    return response.data;
-  }
+  // async createReservation(performanceId: number, seatCount: number): Promise<Reservation> {
+  //   const response = await this.api.post(`/performances/reservations/${performanceId}`, {
+  //     seatCount,
+  //   });
+  //   return response.data;
+  // }
 
-  async confirmReservation(performanceId: number, reservationId: number): Promise<Reservation> {
-    const response = await this.api.patch(
-      `/performances/reservations/${performanceId}/${reservationId}/confirm`
-    );
-    return response.data;
-  }
+  // async confirmReservation(performanceId: number, reservationId: number): Promise<Reservation> {
+  //   const response = await this.api.patch(
+  //     `/performances/reservations/${performanceId}/${reservationId}/confirm`
+  //   );
+  //   return response.data;
+  // }
 
-  async cancelReservation(performanceId: number, reservationId: number): Promise<Reservation> {
-    const response = await this.api.patch(
-      `/performances/reservations/${performanceId}/${reservationId}/cancel`
-    );
-    return response.data;
-  }
+  // async cancelReservation(performanceId: number, reservationId: number): Promise<Reservation> {
+  //   const response = await this.api.patch(
+  //     `/performances/reservations/${performanceId}/${reservationId}/cancel`
+  //   );
+  //   return response.data;
+  // }
 
-  async refundReservation(performanceId: number, reservationId: number): Promise<Reservation> {
-    const response = await this.api.patch(
-      `/performances/reservations/${performanceId}/${reservationId}/refund`
-    );
-    return response.data;
-  }
+  // async refundReservation(performanceId: number, reservationId: number): Promise<Reservation> {
+  //   const response = await this.api.patch(
+  //     `/performances/reservations/${performanceId}/${reservationId}/refund`
+  //   );
+  //   return response.data;
+  // }
 
   // Booking APIs
-  async createBooking(data: CreateBookingRequest): Promise<{ message: string; bookingId: string }> {
-    const response = await this.api.post('/booking/booking', data);
+  async createBooking(
+    data: CreateBookingRequest
+  ): Promise<{ message: string; bookingId: string }> {
+    const response = await this.api.post("/booking/booking", data);
     return response.data;
   }
 
   async getMyBookings(): Promise<Booking[]> {
-    const response = await this.api.get('/booking/booking/my');
+    const response = await this.api.get("/booking/booking/my");
     return response.data;
   }
 
   async cancelBooking(bookingId: string): Promise<{ message: string }> {
-    const response = await this.api.delete('/booking/booking/my', {
+    const response = await this.api.delete("/booking/booking/my", {
       data: { bookingId },
     });
     return response.data;
@@ -191,7 +206,7 @@ class ApiService {
 
   // Payment APIs
   async executePayment(data: PaymentRequest): Promise<PaymentResponse> {
-    const response = await this.api.post('/payment/payment/execute', data);
+    const response = await this.api.post("/payment/payment/execute", data);
     return response.data;
   }
 
@@ -200,7 +215,9 @@ class ApiService {
       const response = await this.api.get(`/review/reviews/my`);
       return this.handleArrayResponse(response.data) as Review[];
     } catch (error) {
-      const axiosError = error as Record<string, unknown> & { response?: { status: number } };
+      const axiosError = error as Record<string, unknown> & {
+        response?: { status: number };
+      };
       if (axiosError.response?.status === 401) {
         return [];
       }
@@ -218,11 +235,16 @@ class ApiService {
   }
 
   async getPerformanceReviews(performanceId: number): Promise<Review[]> {
-    const response = await this.api.get(`/review/reviews/performance/${performanceId}`);
+    const response = await this.api.get(
+      `/review/reviews/performance/${performanceId}`
+    );
     return this.handleArrayResponse(response.data) as Review[];
   }
 
-  async updateReview(reviewId: number, data: UpdateReviewRequest): Promise<Review> {
+  async updateReview(
+    reviewId: number,
+    data: UpdateReviewRequest
+  ): Promise<Review> {
     const response = await this.api.patch(`/review/reviews/${reviewId}`, data);
     return this.handleObjectResponse<Review>(response.data);
   }

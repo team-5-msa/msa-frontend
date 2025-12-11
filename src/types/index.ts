@@ -24,7 +24,12 @@ export interface AuthResponse {
 }
 
 // Performance Types
-export type PerformanceCategory = 'THEATER' | 'MUSICAL' | 'CONCERT' | 'EXHIBITION' | 'MOVIE';
+export type PerformanceCategory =
+  | "THEATER"
+  | "MUSICAL"
+  | "CONCERT"
+  | "EXHIBITION"
+  | "MOVIE";
 
 export interface Performance {
   id: number;
@@ -42,7 +47,11 @@ export interface Performance {
 }
 
 // Reservation Types
-export type ReservationStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'EXPIRED';
+export type ReservationStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "CANCELLED"
+  | "EXPIRED";
 
 export interface Reservation {
   reservationId: number;
@@ -56,7 +65,7 @@ export interface Reservation {
 }
 
 // Booking Types
-export type BookingStatus = 'pending' | 'paid' | 'CANCELLED' | 'payment_failed';
+export type BookingStatus = "PENDING" | "PAID" | "CANCELLED" | "FAILED";
 
 export interface CreateBookingRequest {
   performanceId: string;
