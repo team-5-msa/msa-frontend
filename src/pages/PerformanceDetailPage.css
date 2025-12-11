@@ -60,7 +60,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(165, 85, 255, 0.2) 0%, rgba(0, 191, 255, 0.2) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(165, 85, 255, 0.2) 0%,
+    rgba(0, 191, 255, 0.2) 100%
+  );
 }
 
 .detail-placeholder .placeholder-icon {
@@ -270,7 +274,7 @@
 }
 
 /* Firefox */
-.seat-input-group input[type='number'] {
+.seat-input-group input[type="number"] {
   -moz-appearance: textfield;
 }
 
@@ -489,7 +493,7 @@
   border-radius: var(--radius-md);
   font-family: inherit;
   font-size: 1rem;
-  color: var(--color-text-primary);
+  color: var(--color-bg-dark);
   background: rgba(165, 85, 255, 0.05);
   margin-bottom: var(--spacing-md);
   resize: vertical;
@@ -570,4 +574,8 @@
   border-radius: var(--radius-sm);
   color: var(--color-error);
   font-size: 0.9rem;
+}
+
+.reviews-section .review-content {
+  color: var(--color-text-primary);
 }
